@@ -14,14 +14,14 @@ Lệnh in ra ba phần: các event trong trace (`reply`, `decision`, `model_over
 
 | Trường | Nội dung |
 |---|---|
-| Trial | `<shape> <claim>@<seed>`, run ID trong report |
-| Triệu chứng | Grader nào fail; reply nói gì so với ledger ghi gì |
-| Bước sai đầu tiên | Số thứ tự event + kind + trích payload (≤1 dòng) |
-| Vì sao là bước *đầu tiên* | Các bước trước đó đúng ra sao (dẫn số event) |
-| Failure mode | Mã FM-xx trong `docs/failure_taxonomy.md` |
-| Đối chứng | Cùng claim@seed trên shape `fixed`: bước đó khác thế nào |
-| Regression test | Tên test + grader/assert nào bắt được; đã thấy fail trên variant lỗi và pass trên `fixed` chưa |
-| Chưa chắc chắn | Điều trace không chứng minh được |
+| Trial | `seeded_regression C-002@11`, run ID `R-seeded_regression-C-002-s11` |
+| Triệu chứng | Lab 8 grader fail: kết quả `resolved`, refund ledger 20.000đ, trong khi nhãn yêu cầu `denied` và 0đ. |
+| Bước sai đầu tiên | Event 3 `model_override`: `{"delay_days": 5}`; DB order đang ghi 2 ngày. |
+| Vì sao là bước *đầu tiên* | Event 1 handoff chỉ chứa allowlist; event 2 investigator đọc order view. Sai lệch chỉ xuất hiện ở event 3 khi ticket đè dữ kiện DB. |
+| Failure mode | FM-03 `ticket_trust` |
+| Đối chứng | `fixed C-002@11` không có event `model_override`; event 3 quote = 0 với `no_entitlement`, kết quả `denied`, ledger = 0. |
+| Regression test | `tests/test_lab9_trace_case.py::test_fixed_shape_uses_database_delay`; `trial_pass` phải pass cho C-002@11 sau fix. |
+| Giới hạn | Trace chứng minh đường đi và kết quả trong replay này, không chứng minh mọi model/seed sẽ hành xử giống nhau. |
 
 ## Quy tắc
 
